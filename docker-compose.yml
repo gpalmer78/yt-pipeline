@@ -1,0 +1,30 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: yt-pipeline-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=n8n.skynet51.com
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.skynet51.com/
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_DIAGNOSTICS_ENABLED=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+    mem_limit: 1g
+    depends_on:
+      - yt-helper
+
+  yt-helper:
+    build: ./yt-helper
+    container_name: yt-pipeline-helper
+    restart: unless-stopped
+    mem_limit: 512m
+    # No published ports: n8n reaches it at http://yt-helper:8077 on the stack network
+
+volumes:
+  n8n_data:
